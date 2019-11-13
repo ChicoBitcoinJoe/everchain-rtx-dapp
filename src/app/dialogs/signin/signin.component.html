@@ -1,0 +1,36 @@
+<div class="dark-bg light-text" fxLayout="column" fxLayoutAlign="start center">
+  <div style="max-width: 304px;" fxLayout="column">
+    <!-- <app-header header="Sign In" subheader="Unlock your Ethereum Account"></app-header> -->
+    <h2 style="margin: 16px 0px; text-align: center;">
+      <span *ngIf="!App.networkId">No Network Detected!</span>
+      <span *ngIf="App.networkId && !App.networkIsValid">Wrong Network Detected</span>
+      <span *ngIf="App.networkId && App.networkIsValid">Sign in</span>
+    </h2>
+
+    <small style="padding: 16px 0px; text-align: center;" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px">
+      <span *ngIf="!App.networkId">The Ethereum network could not be detected. Consider trying the <a href="https://metamask.io" target="_blank">metamask extention</a> to connect to the Ethereum Network</span>
+      <span *ngIf="App.networkId && !App.networkIsValid">The Ethereum network detected is not a valid network. Switch to the Main Ethereum Network or the Kovan Testnet.</span>
+      <span *ngIf="App.networkId && App.networkIsValid">By using this site or any associated smart contracts or applications you agree to any <a href="">Privacy Policies</a> and <a href="">Terms of Service</a>.</span>
+    </small>
+
+    <div style="padding: 32px 0px;" fxLayout="column" fxLayoutGap="16px">
+      <button mat-raised-button color="primary" class="signin-button"
+      [class.grey-text]="User.isSigningIn || User.isSignedIn"
+      [disabled]="!App.networkIsValid || User.isSigningIn || User.isSignedIn"
+      (click)="signIn()">
+        <div *ngIf="!User.isSigningIn">Sign in to Ethereum</div>
+        <div *ngIf="User.isSigningIn">Waiting for approval...</div>
+        <span fxFlex></span>
+        <mat-icon *ngIf="!waitingForSignature" style="margin: auto; padding-left: 8px;">public</mat-icon>
+        <mat-icon *ngIf="waitingForSignature && !signError" [ngClass]="{'rotate': !txReceipt}" style="margin: auto;">sync</mat-icon>
+      </button>
+      <div fxLayout="row">
+        <span fxFlex></span>
+        <mat-checkbox [(ngModel)]="autoSignin" [disabled]="User.isSigningIn || User.isSignedIn">Enable auto sign in</mat-checkbox>
+        <span fxFlex="16px"></span>
+      </div>
+    </div>
+
+    <button mat-button (click)="dialogRef.close()">back</button>
+  </div>
+</div>

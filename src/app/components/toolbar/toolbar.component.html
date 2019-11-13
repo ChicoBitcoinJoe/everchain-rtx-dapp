@@ -1,0 +1,33 @@
+<mat-toolbar fxLayout="start column" fxLayoutAlign="center">
+  <mat-toolbar-row class="defaultMaxWidth defaultColor">
+    <span class="cursor" routerLink="/">Everchain</span>
+    <span fxFlex></span>
+    <button *ngIf="App.errors.length > 0" mat-icon-button color="warn"><mat-icon>error_outline</mat-icon></button>
+    <button *ngIf="!User.isSignedIn && !User.isSigningIn" mat-button (click)="openSigninDialog()">sign in</button>
+    <button *ngIf="User.isSigningIn" mat-icon-button disabled="true"><mat-icon class="rotate">sync</mat-icon></button>
+    <button *ngIf="User.isSigningIn || User.isSignedIn" mat-icon-button [matMenuTriggerFor]="menu" [disabled]="User.isSigningIn">
+      <mat-icon>account_balance_wallet</mat-icon>
+    </button>
+  </mat-toolbar-row>
+
+  <mat-toolbar-row *ngIf="" class="defaultMaxWidth" fxLayoutGap="8px">
+    <span>Second Line</span>
+    <span fxFlex></span>
+    <button mat-icon-button><mat-icon aria-hidden="false" aria-label="Example user verified icon">verified_user</mat-icon></button>
+  </mat-toolbar-row>
+
+  <mat-toolbar-row *ngIf="" class="defaultMaxWidth" fxLayoutGap="8px">
+    <span>Third Line</span>
+    <span fxFlex></span>
+    <button mat-icon-button><mat-icon aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon></button>
+    <button mat-icon-button><mat-icon aria-hidden="false" aria-label="Example delete icon">delete</mat-icon></button>
+  </mat-toolbar-row>
+</mat-toolbar>
+<mat-menu #menu="matMenu">
+  <div fxLayout="row" fxLayoutAlign="center center">
+    <h4 style="padding-left: 16px; padding-top: 6px;" fxFlex>Wallets</h4>
+    <button style="margin-right: 16px;" mat-icon-button [routerLink]="'/wallet/new'"><mat-icon>add</mat-icon></button>
+  </div>
+  <div *ngIf="User.wallets.length == 0" style="padding: 16px; color: grey">hit the "+" button to create a new wallet</div>
+  <button *ngFor="let wallet of User.wallets" mat-menu-item [routerLink]="['/wallet', wallet.address]">{{wallet.name ? wallet.name : wallet.address}}</button>
+</mat-menu>

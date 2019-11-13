@@ -1,0 +1,40 @@
+<div style="padding: 16px;" fxLayout="column" fxLayoutAlign="start center" fxFlexFill>
+  <div fxLayout="column" class="defaultMaxWidth">
+    <h1>Everchain</h1>
+    <h3>Easily schedule recurring payments</h3>
+
+    <span fxFlex="48px"></span>
+
+    <div fxLayout="column" fxLayoutGap="16px">
+      <mat-card style="margin: 16px; overflow: auto;">
+        <h2>App</h2>
+        <div style="padding-bottom: 16px;">Network ID: {{App.networkIsValid ? App.networkId : 'invalid'}}</div>
+        <div style="padding-bottom: 16px;" fxLayoutGap="16px">
+          <span fxFlex>Auto signin {{App.autoSigninEnabled ? 'enabled' : 'disabled'}}</span>
+          <a class="cursor" (click)="App.enableAutoSignin(!App.autoSigninEnabled)">{{App.autoSigninEnabled ? 'disable' : 'enable'}}</a>
+        </div>
+        <div>
+          <h4>Default Tokens</h4>
+          <div style="padding-bottom: 16px;" *ngFor="let token of Tokens.defaultTokens">{{token.name}}</div>
+        </div>
+      </mat-card>
+
+      <mat-card *ngIf="App.networkIsValid" style="margin: 16px; overflow: auto;">
+        <h2>User</h2>
+        <p>Address: {{User.address ? User.address : 'Not signed in'}}</p>
+        <!--
+        <div>
+          <h4 *ngIf="User.tokens.length > 0">Tokens</h4>
+          <div style="padding-bottom: 16px;" *ngFor="let token of User.tokens">{{token.name}}</div>
+        </div>
+      -->
+        <div>
+          <h4 *ngIf="User.wallets.length > 0">Wallets</h4>
+          <div style="padding-bottom: 16px;" *ngFor="let wallet of User.wallets">{{wallet.name ? wallet.name : wallet.address }}</div>
+        </div>
+      </mat-card>
+    </div>
+
+  </div>
+
+</div>

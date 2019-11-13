@@ -1,0 +1,23 @@
+:host {
+  height: 100%;
+}
+
+.rtx-list-item {
+  padding-top: 20.5px;
+  padding-bottom: 32px;
+  font-size: 16px;
+  color: rgba(255,255,255,0.83);
+}
+
+.active {
+  border: 1px solid white;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.datePicker {
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.4);
+}

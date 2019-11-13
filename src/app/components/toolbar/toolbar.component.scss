@@ -1,0 +1,11 @@
+:host {
+  position: relative;
+}
+
+.minWidth280px {
+  min-width: 280px !important;
+}
+
+mat-menu {
+  min-width: 300px;
+}

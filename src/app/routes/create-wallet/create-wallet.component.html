@@ -1,0 +1,63 @@
+<div fxLayout="column" fxFlexFill>
+  <div fxLayout="column" ngStyle.gt-xs="margin: 48px; padding: 32px;" style="margin: 16px;" fxFlex>
+    <mat-card style="border-radius: 0px;" fxLayout="column">
+      <div fxLayout="row" fxLayoutGap="32px">
+        <mat-form-field fxFlex>
+          <input matInput type="text" placeholder="Wallet Name" [(ngModel)]="name" [disabled]="waitingForSignature || tx">
+        </mat-form-field>
+        <button *ngIf="!confirmation" fxHide.xs mat-raised-button color="primary" (click)="createWallet()" [disabled]="User.isSigningIn || waitingForSignature || receivedSignature">
+          <div fxLayout="row" fxLayoutAlign="start center">
+            <span fxFlex>Create Wallet &nbsp;</span>
+            <mat-icon>public</mat-icon>
+          </div>
+        </button>
+        <button *ngIf="confirmation" fxHide.xs mat-raised-button color="primary" class="everchain-btn" (click)="viewWallet()">
+          <div fxLayout="row" fxLayoutAlign="start center">
+            <span fxFlex>View Wallet &nbsp;</span>
+            <mat-icon>public</mat-icon>
+          </div>
+        </button>
+      </div>
+      <div fxLayout="row" fxLayoutGap="32px">
+        <mat-form-field fxFlex>
+          <input matInput type="number" min="0" step="0.001"  placeholder="Prefund with ether (recommended)" [(ngModel)]="ether" [disabled]="waitingForSignature || tx">
+          <mat-hint *ngIf="User.balances.ether">available: {{User.balances.ether.ether | number: '1.2-5'}} eth &nbsp;&nbsp;&nbsp; (${{User.balances.ether.usd * User.balances.ether.ether | number: '1.2-2'}})</mat-hint>
+        </mat-form-field>
+      </div>
+      <span fxFlex="16px"></span>
+      <button *ngIf="!confirmation" fxHide fxShow.xs mat-raised-button color="primary" class="create-wallet-button" (click)="createWallet()" [disabled]="waitingForSignature || txHash">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <span fxFlex>Create Wallet &nbsp;</span>
+          <mat-icon>public</mat-icon>
+        </div>
+      </button>
+      <button *ngIf="confirmation" fxHide fxShow.xs mat-raised-button color="primary" class="create-wallet-button" (click)="viewWallet()">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <span fxFlex>View Wallet &nbsp;</span>
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+      </button>
+    </mat-card>
+
+    <div *ngIf="waitingForSignature || txHash || signError" fxLayout="row" style="border: 1px solid white; color: white; padding: 32px;">
+      <span *ngIf="!signError">Waiting for user signature...</span>
+      <span *ngIf="signError">User denied signature!</span>
+      <span fxFlex></span>
+      <mat-icon *ngIf="waitingForSignature && !signError" [ngClass]="{'rotate': !txReceipt}">sync</mat-icon>
+      <mat-icon *ngIf="!waitingForSignature && !signError">check</mat-icon>
+      <mat-icon *ngIf="signError">close</mat-icon>
+    </div>
+
+    <div *ngIf="receivedSignature || txHash || deployError" fxLayout="row" fxLayoutAlign="center center" style="border: 1px solid white; border-top: 0px; color: white; padding: 32px;">
+      <span *ngIf="receivedSignature && !confirmation && !deployError">Waiting for wallet deployment... Be patient!</span>
+      <span *ngIf="confirmation && !deployError">Wallet deployed!</span>
+      <span *ngIf="deployError">Something went wrong!</span>
+      <span fxFlex></span>
+      <span fxFlex="16px"></span>
+      <mat-icon *ngIf="!confirmation && !deployError" [ngClass]="{'rotate': !confirmation}">sync</mat-icon>
+      <mat-icon *ngIf="confirmation && !deployError">check</mat-icon>
+      <mat-icon *ngIf="deployError">close</mat-icon>
+    </div>
+
+  </div>
+</div>

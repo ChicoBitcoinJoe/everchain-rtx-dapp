@@ -1,0 +1,62 @@
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+html, body {
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+* {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+a {
+  text-decoration: underline;
+  color: rgba(45, 15, 90, 0.87);
+}
+
+.white {
+  color: rgba(255,255,255,0.87);
+}
+
+.defaultColor {
+  color: rgba(45, 15, 90, 1);
+}
+
+.defaultBackgroundColor {
+  background-color: rgba(45, 15, 90, 1);
+}
+
+.defaultMaxWidth {
+  max-width: 960px;
+  width: 100%;
+}
+
+.cursor {
+  cursor: hand;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: none;
+}
+
+.rotate {
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

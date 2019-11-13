@@ -1,0 +1,122 @@
+<!--
+<div fxLayout="row" fxLayoutAlign="center" fxFlexFill>
+  <div fxLayout="row" style="max-width: 996px; width: 100%">
+
+    <div *ngIf="ready" fxHide fxShow.xs fxFlex>
+      <app-token-list [tokens]="User.tokens" [selectedToken]="selectedToken ? selectedToken : {address: null}"></app-token-list>
+    </div>
+
+    <div *ngIf="ready" style="color: white;" fxHide.xs fxFlex>
+      <div fxLayout="row" fxFlex>
+
+        <div style="border-right: 1px solid rgba(255,255,255,0.25);" fxLayout="column" fxFlex="300px">
+          <div style="overflow: auto; padding: 24px;" fxFlex>
+            <app-token-list [tokens]="User.tokens" [selectedToken]="selectedToken ? selectedToken : {address: null}"></app-token-list>
+          </div>
+        </div>
+
+        <div fxLayout="column" fxFlex>
+          <div style="overflow: auto;" fxFlex>
+
+            <div *ngIf="!showTransferCard" style="min-height: 192px; margin: 24px 24px; padding: 16px 16px;" fxLayout="column">
+              <div [ngClass]="{'hidden': !selectedToken}" fxLayoutGap="16px">
+                <button mat-icon-button [ngClass]="{'hidden': !User.isSignedIn}" (click)="startTransfer()">
+                  <mat-icon style="font-size: 32px; width: 30px; height: 30px; padding-top: 4px;">send</mat-icon>
+                </button>
+              </div>
+              <h1 style="padding: 36px 0px;" class="ellipsis">{{wallet.name ? wallet.name : 'Loading wallet...'}}</h1>
+            </div>
+
+            <mat-card *ngIf="showTransferCard" style="margin: 24px 24px; padding: 16px 16px; max-width: 796px;" fxLayout="column">
+
+              <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="32px">
+                <button mat-icon-button [ngClass]="{'hidden': !User.isSignedIn}" (click)="endTransfer()">
+                  <mat-icon style="font-size: 32px; width: 30px; height: 30px; padding-top: 4px;">cancel_schedule_send</mat-icon>
+                </button>
+                <mat-checkbox [(ngModel)]="isScheduled">Schedule</mat-checkbox>
+                <mat-checkbox *ngIf="isScheduled" [(ngModel)]="isRecurring">Recurring</mat-checkbox>
+              </div>
+
+              <h1 style="padding: 36px 0px;" class="ellipsis">{{wallet.name ? wallet.name : 'Loading wallet...'}}</h1>
+
+              <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                <mat-form-field fxFlex>
+                  <mat-label>Recipient</mat-label>
+                  <mat-select [(ngModel)]="recipient">
+                    <mat-option *ngFor="let contact of User.contacts" [value]="contact">
+                      {{contact}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <button mat-icon-button>
+                  <mat-icon>person_add</mat-icon>
+                </button>
+              </div>
+
+              <div fxLayout="column" fxLayout.gt-md="row" fxLayoutAlign.gt-md="start center" fxLayoutGap.gt-md="16px">
+                <mat-form-field fxFlex>
+                  <input matInput type="number" min="0" step="0.001"  placeholder="{{selectedToken.name}} amount" [(ngModel)]="ether" [disabled]="waitingForSignature || tx">
+                </mat-form-field>
+                <div *ngIf="isScheduled" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+                  <div style="padding-bottom: 5px;" fxFlex="60px"> send on </div>
+                  <div fxLayout="row">
+                    <div style="border-bottom: 1px solid rgba(0,0,0,0.5); margin-bottom: 7px;">
+                      <angular2-date-picker [(ngModel)]="date" [settings]="settings"></angular2-date-picker>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="isScheduled" fxLayout="column">
+                <div *ngIf="isRecurring" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                  <div style="padding-bottom: 5px;" fxFlex="120px">Repeat every </div>
+                  <mat-form-field fxFlex="50px">
+                    <input matInput type="number" min="1" step="1" [(ngModel)]="intervalValue" [disabled]="waitingForSignature || tx">
+                  </mat-form-field>
+                  <mat-form-field fxFlex="80px">
+                    <mat-select [(ngModel)]="intervalUnit">
+                      <mat-option *ngFor="let unit of ['hour', 'day','week','month','year']" [value]="unit">
+                        {{unit}}{{intervalValue > 1 ? 's' : ''}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                  <div style="padding-bottom: 5px;">Execution Deposit</div>
+                  <mat-form-field fxFlex="80px">
+                    <input matInput type="number" min="0" step="0.001" [(ngModel)]="depositAmount" [disabled]="waitingForSignature || tx">
+                  </mat-form-field>
+                  <mat-form-field fxFlex="120px">
+                    <mat-select [(ngModel)]="depositToken" [disabled]="true">
+                      <mat-option *ngFor="let token of User.tokens" [value]="token">
+                        {{token.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <button mat-icon-button><mat-icon style="font-size: 16px;">help_outline</mat-icon></button>
+                </div>
+              </div>
+              <button *ngIf="!isScheduled" mat-raised-button color="primary" class="padding16" (click)="transfer()">Transfer</button>
+              <button *ngIf="isScheduled" mat-raised-button color="primary" class="padding16" (click)="schedulePayment()">Schedule {{isRecurring ? 'Recurring' : ''}} Payment</button>
+            </mat-card>
+
+            <div *ngIf="!showTransferCard" fxLayout="column">
+              <div *ngFor="let transaction of User.transactions" class="rtx-list-item" style="padding: 0px 24px; padding-bottom: 48px;" fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon *ngIf="rtx.direction == 'in'" style="font-size: 48px; height: 48px; width: 48px; padding-right: 24px; color: #35a235;">arrow_backward</mat-icon>
+                <mat-icon *ngIf="rtx.direction == 'out'" style="font-size: 48px; height: 48px; width: 48px; padding-right: 24px; color: #ff4d4d;">arrow_forward</mat-icon>
+                <div fxLayout="column" fxLayoutGap="4px" fxFlex>
+                  <b fxLayout="row" fxLayoutAlign="start center">{{rtx.amount}} {{rtx.token.symbol}} on {{rtx.timestamp}}</b>
+                  <small style="color: rgba(255,255,255,0.67)">repeats every {{rtx.interval}} {{rtx.unit}}</small>
+                  <small style="padding-top: 8px; font-size: 16px; line-height: 24px;">{{rtx.description}}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+-->
