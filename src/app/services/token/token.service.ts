@@ -46,6 +46,7 @@ export class TokenService {
       };
     }
     else {
+      console.log('ERROR', address);
       return new Error(address + ' is not ether or an address');
     }
 
@@ -53,11 +54,10 @@ export class TokenService {
     return token;
   }
 
-  public async getTokens (addressList) {
+  public async getTokens (tokenList) {
     let tokens = [];
-    for(let i = 0; i < addressList.length; i++) {
-      let address = addressList[i];
-      tokens.push(await this.getToken(address));
+    for(let i = 0; i < tokenList.length; i++) {
+      tokens.push(await this.getToken(tokenList[i]));
     }
     return tokens;
   }
@@ -70,7 +70,7 @@ export class TokenService {
       let price = token.address == 'ether' ? await this.getEtherPrice() : null;
       balances[token.address] = {
         wei: balance,
-        ether: web3.utils.fromWei(balance, 'ether'),
+        value: web3.utils.fromWei(balance, 'ether'),
         usd: price
       };
     }

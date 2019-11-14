@@ -10,6 +10,7 @@ declare let ethereum: any;
 declare let require: any;
 const Web3 = require('web3');
 declare let web3: any;
+web3.currentProvider.setMaxListeners(300);
 
 let DaiToken = {
   '1': '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',

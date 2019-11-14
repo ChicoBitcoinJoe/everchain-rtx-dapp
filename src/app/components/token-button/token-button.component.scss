@@ -1,0 +1,32 @@
+
+.token-list-item {
+  color: rgba(255,255,255,0.95);
+  padding: 16px 32px;
+}
+
+.token-list-item:hover {
+  background-color: rgba(255,255,255,0.25);
+}
+
+.header {
+  margin-bottom: 8px;
+  text-align: right;
+}
+
+.sub-text {
+  color: rgba(255,255,255,0.70);
+  text-align: right;
+  margin-bottom: 16px;
+}
+
+.selected-token {
+  background-color: rgba(255,255,255,0.95) !important;
+}
+
+.selected-token .header {
+  color: rgba(45, 15, 90, 1) !important;
+}
+
+.selected-token .sub-text {
+  color: rgba(45, 15, 90, 1) !important;
+}

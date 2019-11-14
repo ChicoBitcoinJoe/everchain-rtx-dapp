@@ -4,6 +4,8 @@ import { AppService } from "../../services/app/app.service";
 import { TokenService } from "../../services/token/token.service";
 import { UserService } from "../../services/user/user.service";
 
+declare let web3: any;
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -12,11 +14,12 @@ import { UserService } from "../../services/user/user.service";
 export class HomeComponent implements OnInit {
 
   ready: boolean;
+  tokenAddress: string;
 
   constructor (
     public App: AppService,
-    private Tokens: TokenService,
-    private User: UserService,
+    public Tokens: TokenService,
+    public User: UserService,
   ) { }
 
   async ngOnInit () {
@@ -26,6 +29,14 @@ export class HomeComponent implements OnInit {
     catch (err) {
       console.error(err);
     }
+  }
+
+  async addToken () {
+    this.User.addToken(await this.Tokens.getToken(this.tokenAddress));
+  }
+
+  valid () {
+    return web3.utils.isAddress(this.tokenAddress)
   }
 
 }

@@ -39,9 +39,10 @@ import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { HomeComponent } from './routes/home/home.component';
 import { CreateWalletComponent } from './routes/create-wallet/create-wallet.component';
 import { WalletComponent } from './routes/wallet/wallet.component';
-// import { TokenListComponent } from './components/token-list/token-list.component';
+import { TokenListComponent } from './components/token-list/token-list.component';
 
 import { SigninComponent } from './dialogs/signin/signin.component';
+import { TokenButtonComponent } from './components/token-button/token-button.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { SigninComponent } from './dialogs/signin/signin.component';
     SigninComponent,
     CreateWalletComponent,
     WalletComponent,
-    // TokenListComponent,
+    TokenListComponent,
+    TokenButtonComponent,
   ],
   imports: [
     BrowserModule,

@@ -48,9 +48,8 @@ export class CreateWalletComponent implements OnInit {
     let etherAmount = this.ether;
     if(!etherAmount) etherAmount = 0;
     let etherAmountInWei = web3.utils.toBN(web3.utils.toWei(etherAmount.toString(), 'ether'));
-    let tx:any;
     try {
-      tx = await this.User.createWallet(this.name, etherAmountInWei);
+      let tx:any = await this.User.createWallet(this.name, etherAmountInWei);
       tx.on('transactionHash', (txHash) => {
         this.ngZone.run(() => {
           console.log(txHash)
@@ -69,6 +68,7 @@ export class CreateWalletComponent implements OnInit {
       });
       tx.on('error', (err) => {
         this.ngZone.run(() => {
+          this.App.handleError(err);
           if(err.code == 4001) {
             this.signError = true;
           }

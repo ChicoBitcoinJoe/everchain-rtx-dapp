@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import { TokenService } from "../../services/token/token.service";
+
 declare let web3: any;
 declare let ethereum: any;
 declare let require: any;
@@ -9,35 +11,47 @@ let DelegatedWalletManagerArtifact = require('../../artifacts/delegated-wallet/D
 
 export class DelegatedWallet {
 
-  ready: Promise<boolean>;
-  contract: any;
-  name: string;
-  tokens = [];
+  public address: string;
+  public name: string;
+  public newName: string;
+  public tokens = [];
+  public tokenList = [];
+  public balances: {};
+  private storage: any;
 
   constructor (
-    public address: string,
-    public data: any,
+    public Tokens: TokenService,
+    public contract: any,
   ) {
-    this.ready = new Promise (async (resolve,reject) => {
-      this.contract = new web3.eth.Contract(DelegatedWalletArtifact.abi, this.address);
-      this.name = await this.data.private.get(this.address+'.name');
-      resolve(true);
-    })
+    this.address = contract._address;
   }
 
-  async rename (name) {
-    await this.data.private.set(this.address+'.name');
-    this.name = name;
+  async rename () {
+    if(this.name == this.newName) return;
+    if(!this.storage) return;
+    await this.storage.syncDone;
+    await this.storage.private.set(this.address+'.name', this.newName);
+    this.name = this.newName;
   }
 
-  setTokenList (tokenList) {
-    this.tokens = tokenList;
+  async setBalances (tokenList) {
+    this.balances = this.Tokens.getBalances(this.address, tokenList);
   }
 
-  async balanceOf (token) {
-    let balance = await token.methods.balanceOf(this.address).call();
-    token['balance'] = balance;
-    return balance;
+  async setTokens (tokens) {
+    this.tokens = tokens;
+    this.tokenList = [];
+    for (let i = 0; i < tokens.length; i++) {
+      this.tokenList.push(tokens[i].address);
+    }
+    this.setBalances(this.tokenList);
+  }
+
+  async setStorage (storage) {
+    this.storage = storage;
+    await this.storage.syncDone;
+    this.name = await this.storage.private.get(this.address + '.name');
+    this.newName = this.name;
   }
 
 }
@@ -52,9 +66,9 @@ export class WalletService {
   private manager: any;
   private wallets = {};
 
-  constructor () {
-
-  }
+  constructor (
+    private Tokens: TokenService
+  ) { }
 
   async initialize () {
     if(this.ready) return this.ready;
@@ -77,21 +91,30 @@ export class WalletService {
     return this.ready;
   }
 
-  async getWallets (account, data) {
+  async getWallets (account, options:{ storage:any, tokens:any }) {
     await this.ready;
     let walletArray = await this.manager.methods.getWallets(account).call();
     let wallets = [];
     for (let i = 0; i < walletArray.length; i++) {
       let walletAddress = walletArray[i];
-      wallets.push(await this.getWallet(walletAddress, data));
+      wallets.push(await this.getWallet(walletAddress, options));
     }
     return wallets;
   }
 
-  async getWallet (walletAddress, data) {
+  async getWallet (walletAddress, options:{ storage:any, tokens:any }) {
+    if(!web3.utils.isAddress(walletAddress)) return;
     await this.ready;
-    if(this.wallets[walletAddress]) return this.wallets[walletAddress];
-    this.wallets[walletAddress] = new DelegatedWallet(walletAddress, data);
+
+    if(!this.wallets[walletAddress]) {
+      this.wallets[walletAddress] = new DelegatedWallet(
+        this.Tokens,
+        new web3.eth.Contract(DelegatedWalletArtifact.abi, walletAddress)
+      );
+    }
+
+    if(options.storage) this.wallets[walletAddress].setStorage(options.storage);
+    if(options.tokens) this.wallets[walletAddress].setTokens(options.tokens);
     return this.wallets[walletAddress];
   }
 

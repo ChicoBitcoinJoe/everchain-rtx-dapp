@@ -1,0 +1,6 @@
+<a [ngClass]="{'selected-token': selected}" class="token-list-item cursor" fxLayout="column">
+  <div style="width: 100%;">
+    <h2 class="ellipsis header">{{token.name}}</h2>
+  </div>
+  <div class="sub-text">0 {{token.symbol | lowercase}}</div>
+</a>

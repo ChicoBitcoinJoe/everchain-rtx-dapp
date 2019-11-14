@@ -18,8 +18,9 @@ export class UserService {
   isSignedIn: boolean = false;
   address: string;
 
-  data: any;
+  storage: any;
   tokenList = [];
+  tokens = [];
   wallets = [];
   transactions = [];
   private balances = {};
@@ -37,10 +38,14 @@ export class UserService {
       try {
         this.address = (await ethereum.enable())[0];
         this.watchForAccountChanges();
-        this.data = await ThreeBox.openBox(this.address, ethereum);
+        this.storage = await ThreeBox.openBox(this.address, ethereum);
         this.tokenList = await this.getTokenList();
+        this.tokens = await this.Tokens.getTokens(this.tokenList);
         this.balances = await this.Tokens.getBalances(this.address, this.tokenList);
-        this.wallets = await this.Wallets.getWallets(this.address, this.data);
+        this.wallets = await this.Wallets.getWallets(this.address, {
+         storage: this.storage,
+         tokens: this.tokens
+        });
         this.isSignedIn = true;
         console.log("Signed in as: ", this);
         resolve(true);
@@ -62,9 +67,9 @@ export class UserService {
       console.log(txReceipt);
       console.log(walletAddress);
       console.log(name);
-      await this.data.syncDone;
-      await this.data.private.set(walletAddress + '.name', name);
-      this.wallets.push(await this.Wallets.getWallet(walletAddress, this.data));
+      await this.storage.syncDone;
+      await this.storage.private.set(walletAddress + '.name', name);
+      this.wallets.push(await this.Wallets.getWallet(walletAddress, this.storage));
       console.log('added wallet', walletAddress);
     })
     .on('error', function(err){
@@ -75,20 +80,30 @@ export class UserService {
     return tx;
   }
 
-  public addToken (token) {
-    // if(!web3.utils.isAddress(token.address)) return;
-    // if(!this.tokenList.includes(token.address)) this.tokenList.push(token.address);
+  public async addToken (token) {
+    console.log('removing', token.name);
+    if(!web3.utils.isAddress(token.address)) return;
+    if(this.tokenList.includes(token.address)) return;
+
+    this.tokenList.push(token.address);
+    this.tokens.push(token);
+    await this.saveTokenList(this.tokenList);
   }
 
-  public removeToken (token) {
-    // if(!web3.utils.isAddress(token)) return;
-    // this.tokens.splice(this.tokens.indexOf(token),1);
+  public async removeToken (token) {
+    console.log('removing', token.name);
+    if(!this.tokenList.includes(token.address)) return;
+    let index = this.tokenList.indexOf(token.address);
+    console.log(index);
+    this.tokenList.splice(index,1);
+    this.tokens.splice(index,1);
+    await this.saveTokenList(this.tokenList);
   }
 
-  public async balanceOf (token) {
-    if(this.balances[token.address])
-    this.balances[token.address] = await token.balanceOf(this.address);
-    return this.balances[token.address];
+  private async saveTokenList (tokenList) {
+    await this.storage.syncDone;
+    await this.storage.private.set('tokenList', this.tokenList);
+    console.log('saved token list', tokenList);
   }
 
   private async watchForAccountChanges () {
@@ -100,13 +115,8 @@ export class UserService {
   }
 
   private async getTokenList () {
-    let tokenList = await this.data.private.get('tokenList');
+    let tokenList = await this.storage.private.get('tokenList');
     return tokenList ? tokenList : this.Tokens.defaultList;
-  }
-
-  private async getSpace (space) {
-    await this.data.syncDone;
-    return this.data.openSpace(space);
   }
 
 }

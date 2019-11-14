@@ -1,40 +1,64 @@
-<div style="padding: 16px;" fxLayout="column" fxLayoutAlign="start center" fxFlexFill>
-  <div fxLayout="column" class="defaultMaxWidth">
-    <h1>Everchain</h1>
-    <h3>Easily schedule recurring payments</h3>
+<div style="padding: 16px; overflow: auto;" fxLayout="column">
+  <h1>Everchain</h1>
+  <h3>Easily schedule recurring payments</h3>
 
-    <span fxFlex="48px"></span>
+  <span fxFlex="48px"></span>
 
-    <div fxLayout="column" fxLayoutGap="16px">
-      <mat-card style="margin: 16px; overflow: auto;">
-        <h2>App</h2>
-        <div style="padding-bottom: 16px;">Network ID: {{App.networkIsValid ? App.networkId : 'invalid'}}</div>
-        <div style="padding-bottom: 16px;" fxLayoutGap="16px">
-          <span fxFlex>Auto signin {{App.autoSigninEnabled ? 'enabled' : 'disabled'}}</span>
-          <a class="cursor" (click)="App.enableAutoSignin(!App.autoSigninEnabled)">{{App.autoSigninEnabled ? 'disable' : 'enable'}}</a>
+  <div fxLayout="column" fxLayoutGap="16px">
+    <mat-card style="margin: 16px; overflow: auto;">
+      <h2>App</h2>
+      <div style="padding-bottom: 16px;">Network ID: {{App.networkIsValid ? App.networkId : 'invalid'}}</div>
+      <div style="padding-bottom: 16px;" fxLayoutGap="16px">
+        <span fxFlex>Auto signin {{App.autoSigninEnabled ? 'enabled' : 'disabled'}}</span>
+        <a class="link cursor" (click)="App.enableAutoSignin(!App.autoSigninEnabled)">{{App.autoSigninEnabled ? 'disable' : 'enable'}}</a>
+      </div>
+      <div>
+        <h4>Default Tokens</h4>
+        <div style="padding-bottom: 16px;" *ngFor="let token of Tokens.defaultTokens">
+          <span fxFlex>{{token.name}}</span>
+          <a *ngIf="User.isSignedIn && token.address != 'ether' && !User.tokenList.includes(token.address)" class="cursor" (click)="User.addToken(token)">add</a>
         </div>
+      </div>
+    </mat-card>
+
+    <mat-card *ngIf="App.networkIsValid" style="margin: 16px; overflow: auto;">
+      <h2>User</h2>
+      <p>Address: {{User.address ? User.address : 'Not signed in'}}</p>
+      <h4 *ngIf="User.tokens.length > 0">Tokens</h4>
+      <div *ngIf="User.tokens.length > 0" fxLayout="row" fxLayoutGap="16px">
+        <mat-form-field fxFlex>
+          <input matInput [(ngModel)]="tokenAddress" placeholder="Enter A Valid ERC20 Token Address">
+        </mat-form-field>
         <div>
-          <h4>Default Tokens</h4>
-          <div style="padding-bottom: 16px;" *ngFor="let token of Tokens.defaultTokens">{{token.name}}</div>
+          <button mat-raised-button color="primary" (click)="addToken()" [disabled]="!valid()">add token</button>
         </div>
-      </mat-card>
-
-      <mat-card *ngIf="App.networkIsValid" style="margin: 16px; overflow: auto;">
-        <h2>User</h2>
-        <p>Address: {{User.address ? User.address : 'Not signed in'}}</p>
-        <!--
-        <div>
-          <h4 *ngIf="User.tokens.length > 0">Tokens</h4>
-          <div style="padding-bottom: 16px;" *ngFor="let token of User.tokens">{{token.name}}</div>
+      </div>
+      <div *ngIf="User.tokens.length > 0">
+        <div style="padding-bottom: 16px;" *ngFor="let token of User.tokens">
+          <span fxFlex>{{token.name}} ({{(User.balances[token.address] ? User.balances[token.address].value : '0') | number: '1.2-5'}} {{token.symbol | lowercase}})</span>
+          <a *ngIf="token.address != 'ether'" class="cursor" (click)="User.removeToken(token)">remove</a>
         </div>
-      -->
-        <div>
-          <h4 *ngIf="User.wallets.length > 0">Wallets</h4>
-          <div style="padding-bottom: 16px;" *ngFor="let wallet of User.wallets">{{wallet.name ? wallet.name : wallet.address }}</div>
+      </div>
+      <div>
+        <h4 *ngIf="User.wallets.length > 0">Wallets</h4>
+        <div style="padding-bottom: 16px;" *ngFor="let wallet of User.wallets">
+          <div fxLayout="row" fxLayoutGap="16px">
+            <mat-form-field fxFlex>
+              <input matInput [(ngModel)]="wallet.newName" placeholder="{{wallet.address}}">
+            </mat-form-field>
+            <div *ngIf="wallet.name != wallet.newName" fxLayoutGap="16px">
+              <button mat-icon-button color="primary" (click)="wallet.newName = wallet.name">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button mat-raised-button color="primary" (click)="wallet.rename()">rename</button>
+            </div>
+            <div *ngIf="wallet.name == wallet.newName">
+              <button mat-raised-button color="primary" (click)="App.view(wallet.address)">view</button>
+            </div>
+          </div>
         </div>
-      </mat-card>
-    </div>
-
+      </div>
+    </mat-card>
   </div>
 
 </div>

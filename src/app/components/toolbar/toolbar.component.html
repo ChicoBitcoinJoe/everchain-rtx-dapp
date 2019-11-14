@@ -1,5 +1,5 @@
 <mat-toolbar fxLayout="start column" fxLayoutAlign="center">
-  <mat-toolbar-row class="defaultMaxWidth defaultColor">
+  <mat-toolbar-row class="defaultColor">
     <span class="cursor" routerLink="/">Everchain</span>
     <span fxFlex></span>
     <button *ngIf="App.errors.length > 0" mat-icon-button color="warn"><mat-icon>error_outline</mat-icon></button>
@@ -23,6 +23,7 @@
     <button mat-icon-button><mat-icon aria-hidden="false" aria-label="Example delete icon">delete</mat-icon></button>
   </mat-toolbar-row>
 </mat-toolbar>
+
 <mat-menu #menu="matMenu">
   <div fxLayout="row" fxLayoutAlign="center center">
     <h4 style="padding-left: 16px; padding-top: 6px;" fxFlex>Wallets</h4>
