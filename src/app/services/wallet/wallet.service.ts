@@ -115,12 +115,12 @@ export class WalletService {
     return this.wallets[walletAddress];
   }
 
-  public async createWallet (owner: string, etherAmountInWei) {
-    await this.ready;
+  public createWallet (owner: string, etherAmountInWei) {
     if(!etherAmountInWei) etherAmountInWei = web3.utils.toBN('0');
     if(!web3.utils.isAddress(owner)) return new Error('owner is not an address');
     if(!web3.utils.isBN(etherAmountInWei)) return new Error('etherAmountInWei is not a big number');
-    return await this.manager.methods.createWallet(this.factory._address, []).send({from: owner, value: etherAmountInWei});
+    let tx = this.manager.methods.createWallet(this.factory._address, []).send({from: owner, value: etherAmountInWei});
+    return tx;
   }
 
 }

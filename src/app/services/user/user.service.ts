@@ -17,6 +17,7 @@ export class UserService {
   isSigningIn: boolean = false;
   isSignedIn: boolean = false;
   address: string;
+  private accountWatcher: any;
 
   storage: any;
   tokenList = [];
@@ -60,21 +61,19 @@ export class UserService {
     return this.signInPromise;
   }
 
-  public async createWallet (name: string, etherAmountInWei) {
-    let tx:any = await this.Wallets.createWallet(this.address, etherAmountInWei);
+  public createWallet (name: string, etherAmountInWei) {
+    let tx:any = this.Wallets.createWallet(this.address, etherAmountInWei);
+    console.log(tx)
     tx.on('receipt', async (txReceipt) => {
       let walletAddress = txReceipt.events.AddWallet_event.returnValues.wallet;
-      console.log(txReceipt);
-      console.log(walletAddress);
-      console.log(name);
       await this.storage.syncDone;
       await this.storage.private.set(walletAddress + '.name', name);
       this.wallets.push(await this.Wallets.getWallet(walletAddress, this.storage));
-      console.log('added wallet', walletAddress);
     })
     .on('error', function(err){
       if(err.code != 4001) {
         console.error(err)
+        this.App.handleError(err);
       }
     });
     return tx;
@@ -82,7 +81,7 @@ export class UserService {
 
   public async addToken (token) {
     console.log('adding', token.name);
-    // if(!web3.utils.isAddress(token.address)) return;
+    if(!web3.utils.isAddress(token.address)) return;
     if(this.tokenList.includes(token.address)) return;
 
     this.tokenList.push(token.address);
@@ -106,8 +105,9 @@ export class UserService {
   }
 
   private async watchForAccountChanges () {
-    ethereum.on('accountsChanged', function (accounts) {
-      // Time to reload your interface with accounts[0]!
+    if(this.accountWatcher) return;
+
+    this.accountWatcher = ethereum.on('accountsChanged', function (accounts) {
       console.log('account change detected', accounts);
       location.reload();
     });

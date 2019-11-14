@@ -48,42 +48,36 @@ export class CreateWalletComponent implements OnInit {
     let etherAmount = this.ether;
     if(!etherAmount) etherAmount = 0;
     let etherAmountInWei = web3.utils.toBN(web3.utils.toWei(etherAmount.toString(), 'ether'));
-    try {
-      let tx:any = await this.User.createWallet(this.name, etherAmountInWei);
-      tx.on('transactionHash', (txHash) => {
-        this.ngZone.run(() => {
-          console.log(txHash)
-          this.txHash = txHash;
-          this.receivedSignature = true;
-          this.waitingForSignature = false;
-        });
+    let tx:any = this.User.createWallet(this.name, etherAmountInWei);
+    tx.on('transactionHash', (txHash) => {
+      this.ngZone.run(() => {
+        console.log(txHash)
+        this.txHash = txHash;
+        this.receivedSignature = true;
+        this.waitingForSignature = false;
       });
-      tx.on('receipt', (txReceipt) => {
-        this.ngZone.run(() => {
-          console.log(txReceipt);
-          this.txReceipt = txReceipt;
-          this.walletAddress = this.txReceipt.events.AddWallet_event.returnValues.wallet;
-          this.confirmation = true;
-        });
+    });
+    tx.on('receipt', (txReceipt) => {
+      this.ngZone.run(() => {
+        console.log(txReceipt);
+        this.txReceipt = txReceipt;
+        this.walletAddress = this.txReceipt.events.AddWallet_event.returnValues.wallet;
+        this.confirmation = true;
       });
-      tx.on('error', (err) => {
-        this.ngZone.run(() => {
+    });
+    tx.on('error', (err) => {
+      this.ngZone.run(() => {
+        if(err.code == 4001) {
+          this.signError = true;
+        }
+        else {
+          console.error(err);
           this.App.handleError(err);
-          if(err.code == 4001) {
-            this.signError = true;
-          }
-          else {
-            console.error(err);
-            this.deployError = true;
-          }
-          this.waitingForSignature = false;
-        });
+          this.deployError = true;
+        }
+        this.waitingForSignature = false;
       });
-    }
-    catch (err) {
-      //console.error(err)
-      this.waitingForSignature = false;
-    }
+    });
   }
 
   async viewWallet () {
