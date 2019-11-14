@@ -2,5 +2,5 @@
   <div style="width: 100%;">
     <h2 class="ellipsis header">{{token.name}}</h2>
   </div>
-  <div class="sub-text">0 {{token.symbol | lowercase}}</div>
+  <div class="sub-text">{{wallet.balances[token.address] ? wallet.balances[token.address].value : 0 | number: '1.2-5'}} {{token.symbol | lowercase}}</div>
 </a>

@@ -35,7 +35,7 @@
           </div>
         </mat-card>
         <div *ngFor="let token of User.tokens">
-          <app-token-button [(token)]="token" [(selected)]="selectedToken == token.address" (click)="selectToken(token)"></app-token-button>
+          <app-token-button [(wallet)]="wallet" [(token)]="token" [(selected)]="selectedToken == token.address" (click)="selectToken(token)"></app-token-button>
         </div>
       </div>
     </div>

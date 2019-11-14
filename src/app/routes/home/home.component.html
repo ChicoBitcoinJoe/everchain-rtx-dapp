@@ -56,6 +56,11 @@
               <button mat-raised-button color="primary" (click)="App.view(wallet.address)">view</button>
             </div>
           </div>
+          <div *ngFor="let token of User.tokens">
+            <div *ngIf="wallet.balances[token.address]">
+              {{token.name}} ({{wallet.balances[token.address].value | number: '1.2-5'}} {{token.symbol}})
+            </div>
+          </div>
         </div>
       </div>
     </mat-card>

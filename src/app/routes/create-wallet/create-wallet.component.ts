@@ -44,7 +44,7 @@ export class CreateWalletComponent implements OnInit {
 
   async createWallet () {
     this.waitingForSignature = true;
-    this.signError = false;
+    this.signError = null;
     let etherAmount = this.ether;
     if(!etherAmount) etherAmount = 0;
     let etherAmountInWei = web3.utils.toBN(web3.utils.toWei(etherAmount.toString(), 'ether'));

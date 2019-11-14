@@ -15,8 +15,7 @@ export class DelegatedWallet {
   public name: string;
   public newName: string;
   public tokens = [];
-  public tokenList = [];
-  public balances: {};
+  public balances = {};
   private storage: any;
 
   constructor (
@@ -34,17 +33,14 @@ export class DelegatedWallet {
     this.name = this.newName;
   }
 
-  async setBalances (tokenList) {
-    this.balances = this.Tokens.getBalances(this.address, tokenList);
+  async setBalances () {
+    if(!this.tokens) return new Error('tokens not set');
+    this.balances = await this.Tokens.getBalances(this.address, this.tokens);
   }
 
   async setTokens (tokens) {
     this.tokens = tokens;
-    this.tokenList = [];
-    for (let i = 0; i < tokens.length; i++) {
-      this.tokenList.push(tokens[i].address);
-    }
-    this.setBalances(this.tokenList);
+    this.setBalances();
   }
 
   async setStorage (storage) {

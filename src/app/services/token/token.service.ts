@@ -62,17 +62,20 @@ export class TokenService {
     return tokens;
   }
 
-  public async getBalances (address, tokenList) {
+  public async getBalance (address, token) {
+    let balance = await token.balanceOf(address);
+    let price = token.address == 'ether' ? await this.getEtherPrice() : null;
+    return {
+      wei: balance,
+      value: web3.utils.fromWei(balance, 'ether'),
+      usd: price
+    };
+  }
+
+  public async getBalances (address, tokens) {
     let balances = {};
-    for(let i = 0; i < tokenList.length; i++) {
-      let token = await this.getToken(tokenList[i]);
-      let balance = await token.balanceOf(address);
-      let price = token.address == 'ether' ? await this.getEtherPrice() : null;
-      balances[token.address] = {
-        wei: balance,
-        value: web3.utils.fromWei(balance, 'ether'),
-        usd: price
-      };
+    for(let i = 0; i < tokens.length; i++) {
+      balances[tokens[i].address] = await this.getBalance(address, tokens[i]);
     }
     return balances;
   }

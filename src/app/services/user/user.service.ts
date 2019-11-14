@@ -23,7 +23,7 @@ export class UserService {
   tokens = [];
   wallets = [];
   transactions = [];
-  private balances = {};
+  balances = {};
 
   constructor (
     private Tokens: TokenService,
@@ -41,7 +41,7 @@ export class UserService {
         this.storage = await ThreeBox.openBox(this.address, ethereum);
         this.tokenList = await this.getTokenList();
         this.tokens = await this.Tokens.getTokens(this.tokenList);
-        this.balances = await this.Tokens.getBalances(this.address, this.tokenList);
+        this.balances = await this.Tokens.getBalances(this.address, this.tokens);
         this.wallets = await this.Wallets.getWallets(this.address, {
          storage: this.storage,
          tokens: this.tokens

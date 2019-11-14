@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class TokenButtonComponent implements OnInit {
 
+  @Input() wallet;
   @Input() token;
   @Input() selected;
 

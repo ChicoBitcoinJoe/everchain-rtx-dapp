@@ -30,5 +30,7 @@
     <button style="margin-right: 16px;" mat-icon-button [routerLink]="'/wallet/new'"><mat-icon>add</mat-icon></button>
   </div>
   <div *ngIf="User.wallets.length == 0" style="padding: 16px; color: grey">hit the "+" button to create a new wallet</div>
-  <button *ngFor="let wallet of User.wallets" mat-menu-item [routerLink]="['/wallet', wallet.address]">{{wallet.name ? wallet.name : wallet.address}}</button>
+  <button *ngFor="let wallet of User.wallets" mat-menu-item [routerLink]="['/wallet', wallet.address]" style="min-width: 240px;">
+    {{wallet.name ? wallet.name : wallet.address}}
+  </button>
 </mat-menu>
