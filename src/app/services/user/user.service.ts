@@ -81,8 +81,8 @@ export class UserService {
   }
 
   public async addToken (token) {
-    console.log('removing', token.name);
-    if(!web3.utils.isAddress(token.address)) return;
+    console.log('adding', token.name);
+    // if(!web3.utils.isAddress(token.address)) return;
     if(this.tokenList.includes(token.address)) return;
 
     this.tokenList.push(token.address);
@@ -92,9 +92,9 @@ export class UserService {
 
   public async removeToken (token) {
     console.log('removing', token.name);
+    if(token.address == "ether") return new Error('cannot remove ether');
     if(!this.tokenList.includes(token.address)) return;
     let index = this.tokenList.indexOf(token.address);
-    console.log(index);
     this.tokenList.splice(index,1);
     this.tokens.splice(index,1);
     await this.saveTokenList(this.tokenList);
@@ -103,7 +103,6 @@ export class UserService {
   private async saveTokenList (tokenList) {
     await this.storage.syncDone;
     await this.storage.private.set('tokenList', this.tokenList);
-    console.log('saved token list', tokenList);
   }
 
   private async watchForAccountChanges () {

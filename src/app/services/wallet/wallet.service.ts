@@ -50,7 +50,8 @@ export class DelegatedWallet {
   async setStorage (storage) {
     this.storage = storage;
     await this.storage.syncDone;
-    this.name = await this.storage.private.get(this.address + '.name');
+    let name = await this.storage.private.get(this.address + '.name');
+    this.name = name ? name : 'Unnamed Wallet';
     this.newName = this.name;
   }
 

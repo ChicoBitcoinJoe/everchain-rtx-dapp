@@ -6,6 +6,8 @@ import { UserService } from "../../services/user/user.service";
 import { WalletService } from "../../services/wallet/wallet.service";
 import { TokenService } from "../../services/token/token.service";
 
+declare let web3: any;
+
 @Component({
   selector: 'app-wallet',
   templateUrl: './wallet.component.html',
@@ -25,7 +27,7 @@ export class WalletComponent implements OnInit, OnDestroy {
   recipient: any;
 
   showingAddTokenCard: boolean = false;
-  tokenAddress: string;
+  addTokenAddress: string;
   newToken: any;
   newTokenBalance: any;
   valid: boolean = false;
@@ -57,6 +59,14 @@ export class WalletComponent implements OnInit, OnDestroy {
     if(!this.routeObserver) {
       this.routeObserver = this.router.events.subscribe(routeChange => {
         if(routeChange instanceof NavigationEnd){
+          this.showTransferCard = null;
+          this.isScheduled = null;
+          this.recipient = null;
+          this.showingAddTokenCard = null;
+          this.addTokenAddress = null;
+          this.newToken = null;
+          this.newTokenBalance = null;
+          this.valid = null;
           this.parseRoute();
         }
       });
@@ -74,6 +84,7 @@ export class WalletComponent implements OnInit, OnDestroy {
   private async parseRoute () {
     let routeArray = this.router.url.split('/');
     this.selectedWallet = routeArray[2];
+    this.selectedToken = routeArray[4] ? routeArray[4] : null;
     this.wallet = await this.Wallets.getWallet(this.selectedWallet, {
       storage: this.User.isSignedIn ? this.User.storage : null,
       tokens: this.User.isSignedIn ?
@@ -81,11 +92,7 @@ export class WalletComponent implements OnInit, OnDestroy {
         this.Tokens.defaultTokens
     });
 
-    if(routeArray.length >= 5){
-      //this.selectedToken = await this.Tokens.getToken(routeArray[4]);
-      this.selectedToken = routeArray[4];
-      console.log(this.selectedToken)
-    }
+
   }
 
   startTransfer () {
@@ -131,21 +138,20 @@ export class WalletComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onTokenAddressChange () {
+  async onAddTokenAddressChange () {
     this.newToken = null;
-    this.selectedWallet = this.router.url.split('/')[2];
+    if(!(web3.utils.isAddress(this.addTokenAddress) || this.addTokenAddress == 'ether')) return;
     try {
-      if(!web3.utils.isAddress(this.tokenAddress)) return;
-      console.log(this.tokenAddress);
+      console.log(this.addTokenAddress);
       console.log(this.selectedWallet);
-      this.newToken = await this.Tokens.getToken(this.tokenAddress);
-      let balanceInWei = await this.newToken.methods.balanceOf(this.selectedWallet).call();
-      this.newTokenBalance = web3.utils.fromWei(balanceInWei, 'ether');
+      this.newToken = await this.Tokens.getToken(this.addTokenAddress);
+      this.newTokenBalance = await this.newToken.balanceOf(this.selectedWallet);
       console.log(this.newTokenBalance);
       this.valid = true;
     }
     catch (err) {
       //console.error(err);
+      this.App.handleError(err);
       this.valid = false;
     }
   }
@@ -158,6 +164,7 @@ export class WalletComponent implements OnInit, OnDestroy {
   }
 
   async remove(token) {
+    if(token.address == "ether") return;
     this.User.removeToken(token);
     if(this.selectedToken == token.address)
       this.selectedToken = 'ether';

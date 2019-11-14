@@ -3,13 +3,13 @@
 
     <div style="border-right: 1px solid rgba(255,255,255,0.25);" fxLayout="column" fxFlex="300px">
       <div *ngIf="wallet" style="overflow: auto;" fxFlex>
-        <div *ngIf="!showingAddTokenCard" style="min-height: 192px; margin: 24px; padding: 16px;" fxLayout="row">
+        <div *ngIf="!showingAddTokenCard" style="min-height: 151px; margin: 24px; padding: 16px;" fxLayout="row">
           <span fxFlex></span>
           <button *ngIf="User.isSignedIn" mat-icon-button (click)="showingAddTokenCard = true">
             <mat-icon style="font-size: 32px; width: 30px; height: 30px; padding-top: 4px;">edit</mat-icon>
           </button>
         </div>
-        <mat-card *ngIf="showingAddTokenCard" fxLayout="column" style="min-height: 192px; margin: 24px; padding: 16px;">
+        <mat-card *ngIf="showingAddTokenCard" style="min-height: 151px; margin: 24px; padding: 16px;" fxLayout="column">
           <div fxLayout="row" fxLayoutAlign="center center" (click)="showingAddTokenCard = true">
             <h3 style="margin: 16px 0px;">Add Token</h3>
             <span fxFlex></span>
@@ -19,23 +19,23 @@
           </div>
           <mat-form-field>
             <mat-label>ERC20 Token Address</mat-label>
-            <input matInput type="text" [(ngModel)]="tokenAddress" (ngModelChange)="onTokenAddressChange()">
+            <input matInput type="text" [(ngModel)]="addTokenAddress" (ngModelChange)="onAddTokenAddressChange()">
           </mat-form-field>
-          <h4 style="margin: 8px 0px;" fxLayout="column">
-            <small style="color: rgba(0,0,0,0.5);">name</small>
-            {{newToken ? newToken.name : 'Token Name'}}
-          </h4>
-          <h4 style="margin: 8px 0px; text-transform: lowercase;" fxLayout="column">
-            <small style="color: rgba(0,0,0,0.5);">balance</small>
-            {{newTokenBalance ? newTokenBalance : '0' | number: '1.2-5'}} {{newToken ? newToken.symbol : 'tkn'}}
-          </h4>
-          <span fxFlex="16px"></span>
-          <button mat-raised-button color="primary" style="border-radius: 0px; padding: 8px; margin-bottom: 8px;" [disabled]="!valid" (click)="addToken()">Add {{newToken ? newToken.name : 'Token Name'}}</button>
-        </mat-card>
-        <div *ngIf="!showingAddTokenCard">
-          <div *ngFor="let token of User.tokens">
-            <app-token-button [(token)]="token" [(selected)]="selectedToken == token.address" (click)="selectToken(token)"></app-token-button>
+          <div *ngIf="newToken" fxLayout="column">
+            <h4 style="margin: 8px 0px;" fxLayout="column">
+              <small style="color: rgba(0,0,0,0.5);">name</small>
+              {{newToken ? newToken.name : 'Token Name'}}
+            </h4>
+            <h4 style="margin: 8px 0px; text-transform: lowercase;" fxLayout="column">
+              <small style="color: rgba(0,0,0,0.5);">balance</small>
+              {{newTokenBalance ? newTokenBalance : '0' | number: '1.2-5'}} {{newToken ? newToken.symbol : 'tkn'}}
+            </h4>
+            <span fxFlex="16px"></span>
+            <button mat-raised-button color="primary" style="border-radius: 0px; padding: 8px; margin-bottom: 8px;" [disabled]="!valid" (click)="addToken()">Add {{newToken ? newToken.name : 'Token Name'}}</button>
           </div>
+        </mat-card>
+        <div *ngFor="let token of User.tokens">
+          <app-token-button [(token)]="token" [(selected)]="selectedToken == token.address" (click)="selectToken(token)"></app-token-button>
         </div>
       </div>
     </div>
@@ -44,9 +44,12 @@
       <div *ngIf="wallet" style="overflow: auto;" fxFlex>
 
         <div *ngIf="!showTransferCard" style="min-height: 192px; margin: 24px 24px; padding: 16px 16px;" fxLayout="column">
-          <div [ngClass]="{'hidden': !selectedToken}" fxLayoutGap="16px">
-            <button mat-icon-button [ngClass]="{'hidden': !User.isSignedIn}" (click)="startTransfer()">
+          <div [ngClass]="{'hidden': !User.isSignedIn}" fxLayoutGap="16px">
+            <button mat-icon-button [ngClass]="{'hidden': !selectedToken}" [ngClass]="{'hidden': !User.isSignedIn}" (click)="startTransfer()">
               <mat-icon style="font-size: 32px; width: 30px; height: 30px; padding-top: 4px;">send</mat-icon>
+            </button>
+            <button *ngIf="selectedToken == 'ether'" mat-icon-button (click)="createRecurringTransaction()">
+              <mat-icon style="font-size: 32px; width: 30px; height: 30px; padding-top: 4px;">alarm_add</mat-icon>
             </button>
           </div>
           <h1 style="padding: 36px 0px;" class="ellipsis">{{wallet.name ? wallet.name : 'Loading wallet...'}}</h1>

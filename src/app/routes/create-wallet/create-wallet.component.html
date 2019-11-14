@@ -21,7 +21,7 @@
       <div fxLayout="row" fxLayoutGap="32px">
         <mat-form-field fxFlex>
           <input matInput type="number" min="0" step="0.001"  placeholder="Prefund with ether (recommended)" [(ngModel)]="ether" [disabled]="waitingForSignature || tx">
-          <mat-hint *ngIf="User.balances.ether">available: {{User.balances.ether.ether | number: '1.2-5'}} eth &nbsp;&nbsp;&nbsp; (${{User.balances.ether.usd * User.balances.ether.ether | number: '1.2-2'}})</mat-hint>
+          <mat-hint *ngIf="User.balances.ether">available: {{User.balances.ether.value | number: '1.2-5'}} eth &nbsp;&nbsp;&nbsp; (${{User.balances.ether.usd * User.balances.ether.value | number: '1.2-2'}})</mat-hint>
         </mat-form-field>
       </div>
       <span fxFlex="16px"></span>
