@@ -5431,7 +5431,7 @@
     }
   },
   "schemaVersion": "3.0.16",
-  "updatedAt": "2019-11-06T21:50:29.749Z",
+  "updatedAt": "2019-11-10T19:17:25.613Z",
   "devdoc": {
     "author": "Joseph Reed",
     "details": "This contract's goal is to make it easy for anyone to add utility to their cryptocurrency wallet through      the use of delegates. In general, Delegates will be smart contracts that can transfer funds out of the      wallet in predefined ways. Only the owner can add or remove delegates.",
