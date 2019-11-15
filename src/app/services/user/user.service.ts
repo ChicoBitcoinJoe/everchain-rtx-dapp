@@ -63,7 +63,6 @@ export class UserService {
 
   public createWallet (name: string, etherAmountInWei) {
     let tx:any = this.Wallets.createWallet(this.address, etherAmountInWei);
-    console.log(tx)
     tx.on('receipt', async (txReceipt) => {
       let walletAddress = txReceipt.events.AddWallet_event.returnValues.wallet;
       await this.storage.syncDone;

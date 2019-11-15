@@ -15,7 +15,7 @@ import { WalletService } from "../../services/wallet/wallet.service";
 export class CreateWalletComponent implements OnInit {
 
   ready: boolean = false;
-  name: string = "Primary Wallet";
+  name: string = "New Wallet Name";
   ether: number = 0;
   rtxDelegate: boolean = true;
   waitingForSignature: boolean = false;
@@ -59,7 +59,7 @@ export class CreateWalletComponent implements OnInit {
     });
     tx.on('receipt', (txReceipt) => {
       this.ngZone.run(() => {
-        console.log(txReceipt);
+        console.log('confirmed', this.txHash);
         this.txReceipt = txReceipt;
         this.walletAddress = this.txReceipt.events.AddWallet_event.returnValues.wallet;
         this.confirmation = true;
@@ -81,7 +81,6 @@ export class CreateWalletComponent implements OnInit {
   }
 
   async viewWallet () {
-    console.log(this.walletAddress);
     this.router.navigateByUrl('/wallet/' + this.walletAddress);
   }
 

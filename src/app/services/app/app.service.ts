@@ -67,11 +67,11 @@ export class AppService {
     })
   }
 
-  public async view (addressOrString) {
-    if(web3.utils.isAddress(addressOrString))
-      this.router.navigateByUrl('/wallet/' + addressOrString);
+  public async view (walletAddressOrString) {
+    if(web3.utils.isAddress(walletAddressOrString))
+      this.router.navigateByUrl('/wallet/' + walletAddressOrString);
     else
-      this.router.navigateByUrl(addressOrString);
+      this.router.navigateByUrl(walletAddressOrString);
 
   }
 
